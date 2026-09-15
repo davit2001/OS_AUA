@@ -7,7 +7,6 @@
 int main()
 {
     pid_t child1, child2;
-    int status1, status2;
 
     child1 = fork();
 
@@ -30,21 +29,13 @@ int main()
     }
 
     if (child2 == 0) {
-        printf("Second child process\n");
-        exit(5);
+        execl("/bin/date", "date", NULL);
+        perror("execl failed");
+        exit(1);
     }
 
-    waitpid(child2, &status2, 0);
-
-    if (WIFEXITED(status2)) {
-        printf("Second child exit status: %d\n", WEXITSTATUS(status2));
-    }
-
-    wait(&status1);
-
-    if (WIFEXITED(status1)) {
-        printf("First child exit status: %d\n", WEXITSTATUS(status1));
-    }
+    waitpid(child1, NULL, 0);
+    waitpid(child2, NULL, 0);
 
     printf("Parent process done\n");
 
